@@ -21,14 +21,14 @@
 Claude Code 会话内：
 
 ```text
-/plugin marketplace add git@code.amh-group.com:Y0010495/specrail.git
+/plugin marketplace add git@github.com:gaorun/specrail.git
 /plugin install specrail@specrail-marketplace
 ```
 
 Qoder 终端：
 
 ```sh
-qoder plugins marketplace add git@code.amh-group.com:Y0010495/specrail.git
+qoder plugins marketplace add git@github.com:gaorun/specrail.git
 qoder plugins install specrail@specrail-marketplace
 ```
 
