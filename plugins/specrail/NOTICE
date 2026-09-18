@@ -1,0 +1,15 @@
+specrail
+Copyright 2026 JetBrains s.r.o.
+
+This product is a derivative work of the ThinkRail project.
+
+- Portions of `src/core/` are copied from ThinkRail's `packages/spec-graph` core
+  (Copyright 2026 JetBrains s.r.o., Apache License 2.0) and modified for standalone
+  CLI use.
+- Portions of `skills/` are adapted from ThinkRail's `packages/pi-thinkrail-workflow`
+  and `packages/spec-graph` skill texts (Copyright 2026 JetBrains s.r.o., Apache
+  License 2.0) and modified for cross-assistant distribution.
+
+The Apache License 2.0 does not grant permission to use the trade names, trademarks,
+or product names of the licensor, except as required for reasonable and customary
+use in describing the origin of the work.

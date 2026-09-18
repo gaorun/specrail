@@ -14,7 +14,7 @@ import {
 import { CONFIG_PATH, DistributeError, errorDetail, readConfig, writeConfig } from "./config.ts";
 import { hasRuleBlock, RULE_TEXT, upsertRuleBlock } from "./rule.ts";
 
-const SKILLS_SOURCES = ["../skills/", "../../skills/"];
+const SKILLS_SOURCES = ["../skills/", "../../skills/", "./skills/"];
 const FRONTMATTER = /^---\r?\n([\s\S]*?)\r?\n---/;
 const AGENTS_FILE = "AGENTS.md";
 const CONTEXT_IGNORE_PATH = ".specrail/.gitignore";

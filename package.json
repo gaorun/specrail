@@ -8,7 +8,7 @@
 		"specrail": "./dist/cli.js"
 	},
 	"files": [
-		"dist",
+		"dist/cli.js",
 		"skills"
 	],
 	"engines": {
@@ -17,6 +17,7 @@
 	"packageManager": "bun@1.4.2",
 	"scripts": {
 		"build": "bun build src/cli.ts --target=node --outfile=dist/cli.js",
+		"build:plugin": "bun scripts/build-plugin.ts",
 		"typecheck": "tsc --noEmit",
 		"test": "bun test",
 		"lint": "biome check .",

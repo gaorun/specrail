@@ -1,0 +1,12 @@
+{
+  "name": "specrail-marketplace",
+  "owner": {
+    "name": "specrail maintainers"
+  },
+  "plugins": [
+    {
+      "name": "specrail",
+      "source": "./"
+    }
+  ]
+}

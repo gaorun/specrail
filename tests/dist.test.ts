@@ -1,6 +1,7 @@
 import { beforeAll, describe, expect, test } from "bun:test";
 import { spawnSync } from "node:child_process";
-import { readFileSync, rmSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { makeFixtureRepo } from "./helpers.ts";
 
@@ -52,5 +53,26 @@ describe("dist/cli.js 在 node 下", () => {
 		const broken = runNode(["validate", "--root", root]);
 		expect(broken.status).toBe(1);
 		expect(broken.stdout).toContain("Dangling links (1):");
+	});
+
+	test("npm 包不携带原生插件产物和本地安装验证配置", () => {
+		const root = mkdtempSync(join(tmpdir(), "specrail-pack-"));
+		try {
+			writeFileSync(join(root, "package.json"), readFileSync(join(ROOT, "package.json")));
+			mkdirSync(join(root, "dist/plugin/specrail/libexec"), { recursive: true });
+			mkdirSync(join(root, "dist/plugin-smoke/config"), { recursive: true });
+			writeFileSync(join(root, "dist/cli.js"), "#!/usr/bin/env node\n");
+			writeFileSync(join(root, "dist/plugin/specrail/libexec/native-cli"), "binary");
+			writeFileSync(join(root, "dist/plugin-smoke/config/settings.json"), "{}");
+			const packed = spawnSync(process.execPath, ["pm", "pack", "--dry-run", "--ignore-scripts"], {
+				cwd: root,
+				encoding: "utf8",
+			});
+			expect(packed.status, packed.stderr).toBe(0);
+			expect(packed.stdout).toContain("dist/cli.js");
+			expect(packed.stdout).not.toContain("dist/plugin");
+		} finally {
+			rmSync(root, { recursive: true, force: true });
+		}
 	});
 });

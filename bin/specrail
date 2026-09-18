@@ -1,0 +1,27 @@
+#!/bin/sh
+set -eu
+
+os=$(uname -s)
+arch=$(uname -m)
+case "$os" in
+  Darwin) os=darwin ;;
+  Linux) os=linux ;;
+  MINGW*|MSYS*|CYGWIN*) os=windows ;;
+  *) printf 'Unsupported platform: %s %s\n' "$os" "$arch" >&2; exit 2 ;;
+esac
+case "$arch" in
+  x86_64|amd64) arch=x64 ;;
+  arm64|aarch64) arch=arm64 ;;
+  *) printf 'Unsupported platform: %s %s\n' "$os" "$arch" >&2; exit 2 ;;
+esac
+
+plugin_dir=$(CDPATH= cd -- "${0%/*}/.." && pwd)
+binary="$plugin_dir/libexec/specrail-$os-$arch"
+if [ "$os" = windows ]; then binary="$binary.exe"; fi
+if [ ! -x "$binary" ]; then
+  printf 'Missing bundled CLI: %s. Install a complete specrail plugin build.\n' "$binary" >&2
+  exit 2
+fi
+
+unset BUN_BE_BUN BUN_OPTIONS NODE_OPTIONS NODE_PATH
+exec "$binary" "$@"

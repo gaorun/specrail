@@ -99,6 +99,22 @@ skills/          10 个技能 + 系统文档 SPEC.md（英文，分发的源真�
 - 路由规则内容 = 收窄后的版本（新项目接入、PR 生命周期必路由；产品/设计未定时进入；已路由任务继续），
   不移植旧版“所有任务先路由”。
 
+### 插件市场分发
+
+Claude Code 与 Qoder 共用技能和原生 CLI，分别提供 `.claude-plugin/`、`.qoder-plugin/` 清单。
+市场安装是 init/sync 之外的独立入口，不生成项目助手配置，也不需要再次 init。
+
+`scripts/build-plugin.ts` 用 packageManager 固定的 Bun 版本编译自包含程序，支持 macOS / Windows / Linux glibc 的 x64 和 arm64。
+运行不依赖系统 Node、Bun、nvm、mise 或 n；不加载项目运行时配置，不修改项目环境。
+`bin/` 启动器由助手加入执行环境，保留调用者 cwd、参数和退出码；不支持的平台或不完整产物明确失败，不下载依赖或回退系统 Node。
+CLI 版本和 init/sync 技能源嵌入二进制，助手读取的技能随插件复制，二者同源构建。
+
+当前仓库的 Git URL 即市场入口；根市场清单的 source 指向 `./plugins/specrail`。
+全平台构建生成 `plugins/specrail/`，完整产物连同二进制、隐藏清单及可执行权限纳入当前仓库 Git 版本，不另建分发仓库。
+安装缓存仅包含该子目录，不携带根 package.json / 锁文件，避免助手在安装时拉取开发依赖。
+CLI、技能或版本改变后必须重新构建并与源码一起提交；`--current` 仍输出至忽略的 dist 目录，仅供本机验证。
+公开发布需另行核对 Bun 及其静态链接组件的许可和 LGPL 重链接材料；构建不承担提交、推送或合规认证。
+
 ## 数据格式（沿用 spec-graph）
 
 - 节点 = 任意 `.md` 文件 + 非空标量 `id` + `type`（title/status 非入图必需）。
@@ -134,5 +150,6 @@ Apache-2.0（派生自 ThinkRail，版权 JetBrains s.r.o.）。`NOTICE` 声明�
 - **core**：随迁的 bun:test；Node 兼容性以构建产物在 node 下的冒烟守护（`tests/dist.test.ts`：--version / list --json / 退出码）。
 - **cli**：临时 fixture 仓库做 create → show → update → validate 往返 + 退出码断言。
 - **distribute**：init/sync 后断言文件树、清单治理（含移除助手后的清理）、规则块标记保真。
-- **诚实边界**：助手端“实际加载技能”只能人工抽查，不自动化。
+- **插件**：`tests/plugin.test.ts` 构建本机自包含产物，在无 Node/Bun 的 PATH、失效版本管理器 shim、含空格路径下验证读写、init/sync 与退出码；验证平台分派和双市场清单路径。
+- **诚实边界**：Qoder 市场安装、技能发现及助手 Bash 命令发现已在 macOS arm64 实测；Claude Code 及其它操作系统的运行行为仍需目标环境验证，交叉编译成功不等于运行验证。
 - **门禁**：`bun run typecheck` + `bun run lint` + `bun run test`；`tests/dist.test.ts` 先 `bun run build` 再以 node 冒烟 `dist/cli.js`，全新克隆无前置构建步骤。

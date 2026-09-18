@@ -1,0 +1,10 @@
+{
+  "name": "specrail",
+  "version": "0.1.0",
+  "description": "Typed spec graphs and cross-assistant workflows with a bundled CLI",
+  "license": "Apache-2.0",
+  "keywords": [
+    "specs",
+    "workflow"
+  ]
+}
