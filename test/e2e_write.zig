@@ -83,3 +83,43 @@ test "golden replay: mutating commands against a fixture copy" {
     try runner.runCase("delete");
     try runner.runCase("delete-non-interactive");
 }
+
+test "update rejects a bare K=V positional instead of silently succeeding" {
+    var arena_state = std.heap.ArenaAllocator.init(std.testing.allocator);
+    defer arena_state.deinit();
+    const arena = arena_state.allocator();
+
+    var threaded: std.Io.Threaded = .init(std.testing.allocator, .{});
+    defer threaded.deinit();
+    const io = threaded.io();
+
+    const mktemp_result = try std.process.run(arena, io, .{ .argv = &.{ "mktemp", "-d" } });
+    const temp_root = std.mem.trim(u8, mktemp_result.stdout, "\n");
+    defer {
+        var cleanup: std.ArrayListUnmanaged([]const u8) = .empty;
+        cleanup.append(arena, "rm") catch {};
+        cleanup.append(arena, "-rf") catch {};
+        cleanup.append(arena, temp_root) catch {};
+        _ = std.process.run(arena, io, .{ .argv = cleanup.items }) catch {};
+    }
+    const copy = try std.process.run(arena, io, .{ .argv = &.{ "cp", "-R", fixture, temp_root } });
+    if (copy.term != .exited or copy.term.exited != 0) return error.TestUnexpectedResult;
+    const root = try std.fs.path.join(arena, &.{ temp_root, "cli-fixture" });
+    const spec_path = try std.fs.path.join(arena, &.{ root, "specs/module-x.md" });
+
+    const bad = try std.process.run(arena, io, .{ .argv = &.{ cli_exe, "update", "module-x", "status=done", "--root", root } });
+    try std.testing.expectEqual(@as(i32, 2), bad.term.exited);
+    try std.testing.expectEqualStrings("", bad.stdout);
+    try std.testing.expectEqualStrings(
+        "update takes only an id argument; edit frontmatter with --set K=V, --remove K, --add-list K=V, or --remove-list K=V.\n",
+        bad.stderr,
+    );
+    const after_bad = try std.Io.Dir.cwd().readFileAlloc(io, spec_path, arena, .limited(1 << 20));
+    try std.testing.expect(std.mem.indexOf(u8, after_bad, "status: draft") != null);
+
+    const good = try std.process.run(arena, io, .{ .argv = &.{ cli_exe, "update", "module-x", "--set", "status=done", "--root", root } });
+    try std.testing.expectEqual(@as(i32, 0), good.term.exited);
+    try std.testing.expectEqualStrings("Updated frontmatter of specs/module-x.md (id: module-x).\n", good.stdout);
+    const after_good = try std.Io.Dir.cwd().readFileAlloc(io, spec_path, arena, .limited(1 << 20));
+    try std.testing.expect(std.mem.indexOf(u8, after_good, "status: done") != null);
+}

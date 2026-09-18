@@ -24,6 +24,13 @@ pub fn run(ctx: *context.Context) anyerror!u8 {
     const parsed = try args_mod.parse(ctx.arena, ctx.argv, &command_specs);
     const id = if (parsed.positionals.items.len > 0) parsed.positionals.items[0] else
         return args_mod.usageError(ctx.arena, "update requires an id argument.", .{});
+    if (parsed.positionals.items.len > 1) {
+        return args_mod.usageError(
+            ctx.arena,
+            "update takes only an id argument; edit frontmatter with --set K=V, --remove K, --add-list K=V, or --remove-list K=V.",
+            .{},
+        );
+    }
 
     // set: same-key later value wins, first-seen key keeps its position.
     var set_entries = std.ArrayListUnmanaged(parse.Entry).empty;

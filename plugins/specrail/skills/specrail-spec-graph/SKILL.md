@@ -75,7 +75,9 @@ Read:
 
 Manage:
 - `specrail create` — a new spec with scaffolded frontmatter and headings.
-- `specrail update` — a spec's frontmatter (fields and links). It does not touch the body.
+- `specrail update <id> --set K=V` (also `--remove K`, `--add-list K=V`, `--remove-list K=V`) — a spec's
+  frontmatter (fields and links). It does not touch the body. Fields are edited with flags only; a bare
+  `K=V` positional is rejected.
 - `specrail delete` — remove a spec.
 - `specrail validate` — report dangling links, duplicate ids, and parent cycles.
 
@@ -90,6 +92,7 @@ and structure.
 2. **Align.** Reconcile the change with the decisions and contracts the specs record; surface
    contradictions before diverging.
 3. **Update.** When the change alters a boundary, contract, or decision, update the spec — frontmatter
-   (including `status`) with `specrail update`, prose with your normal edit tool — and use
+   (including `status`, e.g. `specrail update <id> --set status=done`) with `specrail update`, prose with
+   your normal edit tool — and use
    `specrail create` for a new module.
 4. **Check.** Run `specrail validate` after structural changes.
