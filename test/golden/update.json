@@ -1,0 +1,453 @@
+[
+  {
+    "name": "set-status",
+    "file": "---\nid: alpha\ntype: task-spec\ntitle: Alpha\nstatus: draft\ntags: [one, two]\n---\n# Body\n",
+    "edit": {
+      "set": {
+        "status": "active"
+      }
+    },
+    "result": {
+      "content": "---\nid: alpha\ntype: task-spec\ntitle: Alpha\nstatus: active\ntags: [one, two]\n---\n# Body\n"
+    }
+  },
+  {
+    "name": "set-new-key-append",
+    "file": "---\nid: alpha\ntype: task-spec\ntitle: Alpha\nstatus: draft\ntags: [one, two]\n---\n# Body\n",
+    "edit": {
+      "set": {
+        "parent": "beta"
+      }
+    },
+    "result": {
+      "content": "---\nid: alpha\ntype: task-spec\ntitle: Alpha\nstatus: draft\ntags: [one, two]\nparent: beta\n---\n# Body\n"
+    }
+  },
+  {
+    "name": "set-title-quote-needed",
+    "file": "---\nid: alpha\ntype: task-spec\ntitle: Alpha\nstatus: draft\ntags: [one, two]\n---\n",
+    "edit": {
+      "set": {
+        "title": "a: b"
+      }
+    },
+    "result": {
+      "content": "---\nid: alpha\ntype: task-spec\ntitle: \"a: b\"\nstatus: draft\ntags: [one, two]\n---\n"
+    }
+  },
+  {
+    "name": "set-empty-string",
+    "file": "---\nid: alpha\ntype: task-spec\ntitle: Alpha\nstatus: draft\ntags: [one, two]\n---\n",
+    "edit": {
+      "set": {
+        "status": ""
+      }
+    },
+    "result": {
+      "content": "---\nid: alpha\ntype: task-spec\ntitle: Alpha\nstatus: \"\"\ntags: [one, two]\n---\n"
+    }
+  },
+  {
+    "name": "set-unknown-key",
+    "file": "---\nid: alpha\ntype: task-spec\ntitle: Alpha\nstatus: draft\ntags: [one, two]\n---\n",
+    "edit": {
+      "set": {
+        "zzz": "1"
+      }
+    },
+    "result": {
+      "content": "---\nid: alpha\ntype: task-spec\ntitle: Alpha\nstatus: draft\ntags: [one, two]\nzzz: \"1\"\n---\n"
+    }
+  },
+  {
+    "name": "remove-status",
+    "file": "---\nid: alpha\ntype: task-spec\ntitle: Alpha\nstatus: draft\ntags: [one, two]\n---\n",
+    "edit": {
+      "remove": [
+        "status"
+      ]
+    },
+    "result": {
+      "content": "---\nid: alpha\ntype: task-spec\ntitle: Alpha\ntags: [one, two]\n---\n"
+    }
+  },
+  {
+    "name": "remove-id-protected",
+    "file": "---\nid: alpha\ntype: task-spec\ntitle: Alpha\nstatus: draft\ntags: [one, two]\n---\n",
+    "edit": {
+      "remove": [
+        "id"
+      ]
+    },
+    "result": {
+      "error": "Cannot remove protected field \"id\"."
+    }
+  },
+  {
+    "name": "set-id-forbidden",
+    "file": "---\nid: alpha\ntype: task-spec\ntitle: Alpha\nstatus: draft\ntags: [one, two]\n---\n",
+    "edit": {
+      "set": {
+        "id": "beta"
+      }
+    },
+    "result": {
+      "error": "Cannot rename a spec's id via set."
+    }
+  },
+  {
+    "name": "set-list-field-forbidden",
+    "file": "---\nid: alpha\ntype: task-spec\ntitle: Alpha\nstatus: draft\ntags: [one, two]\n---\n",
+    "edit": {
+      "set": {
+        "tags": "x"
+      }
+    },
+    "result": {
+      "error": "Use addList/removeList to edit the list field \"tags\"."
+    }
+  },
+  {
+    "name": "add-tags",
+    "file": "---\nid: alpha\ntype: task-spec\ntitle: Alpha\nstatus: draft\ntags: [one, two]\n---\n",
+    "edit": {
+      "addList": {
+        "tags": [
+          "three"
+        ]
+      }
+    },
+    "result": {
+      "content": "---\nid: alpha\ntype: task-spec\ntitle: Alpha\nstatus: draft\ntags: [one, two, three]\n---\n"
+    }
+  },
+  {
+    "name": "add-tags-dedupe",
+    "file": "---\nid: alpha\ntype: task-spec\ntitle: Alpha\nstatus: draft\ntags: [one, two]\n---\n",
+    "edit": {
+      "addList": {
+        "tags": [
+          "two",
+          "three"
+        ]
+      }
+    },
+    "result": {
+      "content": "---\nid: alpha\ntype: task-spec\ntitle: Alpha\nstatus: draft\ntags: [one, two, three]\n---\n"
+    }
+  },
+  {
+    "name": "add-tags-absent",
+    "file": "---\nid: alpha\ntype: task-spec\ntitle: Alpha\nstatus: draft\ntags: [one, two]\n---\n",
+    "edit": {
+      "addList": {
+        "covers": [
+          "x",
+          "y"
+        ]
+      }
+    },
+    "result": {
+      "content": "---\nid: alpha\ntype: task-spec\ntitle: Alpha\nstatus: draft\ntags: [one, two]\ncovers: [x, y]\n---\n"
+    }
+  },
+  {
+    "name": "remove-tags-partial",
+    "file": "---\nid: alpha\ntype: task-spec\ntitle: Alpha\nstatus: draft\ntags: [one, two]\n---\n",
+    "edit": {
+      "removeList": {
+        "tags": [
+          "one"
+        ]
+      }
+    },
+    "result": {
+      "content": "---\nid: alpha\ntype: task-spec\ntitle: Alpha\nstatus: draft\ntags: [two]\n---\n"
+    }
+  },
+  {
+    "name": "remove-tags-all",
+    "file": "---\nid: alpha\ntype: task-spec\ntitle: Alpha\nstatus: draft\ntags: [one, two]\n---\n",
+    "edit": {
+      "removeList": {
+        "tags": [
+          "one",
+          "two"
+        ]
+      }
+    },
+    "result": {
+      "content": "---\nid: alpha\ntype: task-spec\ntitle: Alpha\nstatus: draft\n---\n"
+    }
+  },
+  {
+    "name": "remove-tags-absent-key",
+    "file": "---\nid: alpha\ntype: task-spec\ntitle: Alpha\nstatus: draft\ntags: [one, two]\n---\n",
+    "edit": {
+      "removeList": {
+        "covers": [
+          "x"
+        ]
+      }
+    },
+    "result": {
+      "content": "---\nid: alpha\ntype: task-spec\ntitle: Alpha\nstatus: draft\ntags: [one, two]\n---\n"
+    }
+  },
+  {
+    "name": "comment-line-preserved",
+    "file": "---\n# leading note\nid: alpha\ntype: task-spec\ntitle: A\n---\n",
+    "edit": {
+      "set": {
+        "title": "B"
+      }
+    },
+    "result": {
+      "content": "---\n# leading note\nid: alpha\ntype: task-spec\ntitle: B\n---\n"
+    }
+  },
+  {
+    "name": "inline-comment",
+    "file": "---\nid: alpha\ntype: task-spec\ntitle: A # keep?\n---\n",
+    "edit": {
+      "set": {
+        "status": "active"
+      }
+    },
+    "result": {
+      "content": "---\nid: alpha\ntype: task-spec\ntitle: A # keep?\nstatus: active\n---\n"
+    }
+  },
+  {
+    "name": "unknown-key-preserved",
+    "file": "---\nid: a\ntype: task-spec\nzzz: keep-me\n---\n",
+    "edit": {
+      "set": {
+        "title": "B"
+      }
+    },
+    "result": {
+      "content": "---\nid: a\ntype: task-spec\nzzz: keep-me\ntitle: B\n---\n"
+    }
+  },
+  {
+    "name": "block-list-in",
+    "file": "---\nid: a\ntype: task-spec\ntags:\n  - one\n  - two\n---\n",
+    "edit": {
+      "addList": {
+        "tags": [
+          "three"
+        ]
+      }
+    },
+    "result": {
+      "content": "---\nid: a\ntype: task-spec\ntags: [one, two, three]\n---\n"
+    }
+  },
+  {
+    "name": "crlf",
+    "file": "---\r\nid: a\r\ntype: task-spec\r\ntitle: A\r\n---\r\nBody\r\n",
+    "edit": {
+      "set": {
+        "status": "active"
+      }
+    },
+    "result": {
+      "content": "---\r\nid: a\r\ntype: task-spec\r\ntitle: A\r\nstatus: active\r\n---\r\nBody\r\n"
+    }
+  },
+  {
+    "name": "bom",
+    "file": "﻿---\nid: a\ntype: task-spec\n---\nBody\n",
+    "edit": {
+      "set": {
+        "status": "active"
+      }
+    },
+    "result": {
+      "content": "﻿---\nid: a\ntype: task-spec\nstatus: active\n---\nBody\n"
+    }
+  },
+  {
+    "name": "no-frontmatter",
+    "file": "# Just a doc\n",
+    "edit": {
+      "set": {
+        "status": "active"
+      }
+    },
+    "result": {
+      "error": "File has no frontmatter to update."
+    }
+  },
+  {
+    "name": "invalid-yaml",
+    "file": "---\nid: [unclosed\n---\n",
+    "edit": {
+      "set": {
+        "status": "active"
+      }
+    },
+    "result": {
+      "error": "File frontmatter is not valid YAML."
+    }
+  },
+  {
+    "name": "missing-type",
+    "file": "---\nid: a\ntitle: A\n---\n",
+    "edit": {
+      "set": {
+        "status": "active"
+      }
+    },
+    "result": {
+      "error": "Update would leave the file without a valid id and type."
+    }
+  },
+  {
+    "name": "quoted-values",
+    "file": "---\nid: 'a'\ntype: \"task-spec\"\ntitle: 'A: B'\n---\n",
+    "edit": {
+      "set": {
+        "status": "active"
+      }
+    },
+    "result": {
+      "content": "---\nid: 'a'\ntype: \"task-spec\"\ntitle: 'A: B'\nstatus: active\n---\n"
+    }
+  },
+  {
+    "name": "set-same-value",
+    "file": "---\nid: alpha\ntype: task-spec\ntitle: Alpha\nstatus: draft\ntags: [one, two]\n---\n",
+    "edit": {
+      "set": {
+        "title": "Alpha"
+      }
+    },
+    "result": {
+      "content": "---\nid: alpha\ntype: task-spec\ntitle: Alpha\nstatus: draft\ntags: [one, two]\n---\n"
+    }
+  },
+  {
+    "name": "list-scalar-in",
+    "file": "---\nid: a\ntype: task-spec\ntags: solo\n---\n",
+    "edit": {
+      "addList": {
+        "tags": [
+          "two"
+        ]
+      }
+    },
+    "result": {
+      "content": "---\nid: a\ntype: task-spec\ntags: [solo, two]\n---\n"
+    }
+  },
+  {
+    "name": "nested-map-dropped",
+    "file": "---\nid: a\ntype: task-spec\nmeta:\n  x: 1\n---\n",
+    "edit": {
+      "set": {
+        "title": "B"
+      }
+    },
+    "result": {
+      "content": "---\nid: a\ntype: task-spec\nmeta:\n  x: 1\ntitle: B\n---\n"
+    }
+  },
+  {
+    "name": "set-existing-inline-comment",
+    "file": "---\nid: a\ntype: task-spec\ntitle: A # keep?\n---\n",
+    "edit": {
+      "set": {
+        "title": "B"
+      }
+    },
+    "result": {
+      "content": "---\nid: a\ntype: task-spec\ntitle: B # keep?\n---\n"
+    }
+  },
+  {
+    "name": "remove-with-preceding-comment",
+    "file": "---\n# note\nid: a\ntype: task-spec\nstatus: draft\n---\n",
+    "edit": {
+      "remove": [
+        "status"
+      ]
+    },
+    "result": {
+      "content": "---\n# note\nid: a\ntype: task-spec\n---\n"
+    }
+  },
+  {
+    "name": "remove-middle-key-order",
+    "file": "---\nid: alpha\ntype: task-spec\ntitle: Alpha\nstatus: draft\ntags: [one, two]\n---\n",
+    "edit": {
+      "remove": [
+        "title"
+      ]
+    },
+    "result": {
+      "content": "---\nid: alpha\ntype: task-spec\nstatus: draft\ntags: [one, two]\n---\n"
+    }
+  },
+  {
+    "name": "set-multiline-value",
+    "file": "---\nid: alpha\ntype: task-spec\ntitle: Alpha\nstatus: draft\ntags: [one, two]\n---\n",
+    "edit": {
+      "set": {
+        "title": "l1\nl2"
+      }
+    },
+    "result": {
+      "content": "---\nid: alpha\ntype: task-spec\ntitle: l1\n\n  l2\nstatus: draft\ntags: [one, two]\n---\n"
+    }
+  },
+  {
+    "name": "set-hash-value",
+    "file": "---\nid: alpha\ntype: task-spec\ntitle: Alpha\nstatus: draft\ntags: [one, two]\n---\n",
+    "edit": {
+      "set": {
+        "title": "a # b"
+      }
+    },
+    "result": {
+      "content": "---\nid: alpha\ntype: task-spec\ntitle: \"a # b\"\nstatus: draft\ntags: [one, two]\n---\n"
+    }
+  },
+  {
+    "name": "set-numberlike",
+    "file": "---\nid: alpha\ntype: task-spec\ntitle: Alpha\nstatus: draft\ntags: [one, two]\n---\n",
+    "edit": {
+      "set": {
+        "status": "123"
+      }
+    },
+    "result": {
+      "content": "---\nid: alpha\ntype: task-spec\ntitle: Alpha\nstatus: \"123\"\ntags: [one, two]\n---\n"
+    }
+  },
+  {
+    "name": "block-list-untouched",
+    "file": "---\nid: a\ntype: task-spec\ntags:\n  - one\n  - two\nstatus: draft\n---\n",
+    "edit": {
+      "set": {
+        "title": "B"
+      }
+    },
+    "result": {
+      "content": "---\nid: a\ntype: task-spec\ntags: [one, two]\nstatus: draft\ntitle: B\n---\n"
+    }
+  },
+  {
+    "name": "comment-between-keys",
+    "file": "---\nid: a\n# middle note\ntype: task-spec\ntitle: A\n---\n",
+    "edit": {
+      "set": {
+        "title": "B"
+      }
+    },
+    "result": {
+      "content": "---\nid: a\n# middle note\ntype: task-spec\ntitle: B\n---\n"
+    }
+  }
+]

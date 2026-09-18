@@ -9,18 +9,18 @@ tags: [core, spec-graph]
 
 ## 责任
 
-pi-free 的规格模型：is-a-spec 规则、frontmatter 解析/序列化与就地编辑（yaml 库；链接与元数据列表
-走行内列表）、派生图（parent 树 + depends-on/references/implements DAG + 反向边）、按需内存读索引、
-带元数据过滤的内容 grep、有界图切片、结构校验。不 import 任何助手/宿主 SDK，可独立单测
-（`core.test.ts`）。
+pi-free 的规格模型：is-a-spec 规则、frontmatter 子集解析（有损读）/规范序列化/行级保留编辑（链接与
+元数据列表写出行内流式）、派生图（parent 树 + depends-on/references/implements DAG + 反向边）、
+按需内存读索引、带元数据过滤的内容 grep、有界图切片、结构校验、子集正则引擎。不 import 任何
+助手/宿主 SDK，无第三方依赖，可独立单测（`*_test.zig` + `test/golden/` 语料回放）。
 
 ## 边界
 
 - **拥有**：以上全部。文件系统是唯一事实来源；模型是派生的、内存的、只读的。
-- **公开面**：`index.ts` barrel；`src/cli/` 只经 barrel 消费，不直接 import 叶子文件。模块自己的
-  测试（`core.test.ts`）可直连叶子，以触达刻意不公开的纯函数守卫——`store.ts` 的路径守卫、段解析器
-  与 glob 排序比较器。
-- **允许依赖**：`yaml`；Node 内置模块。
+- **公开面**：`src/lib.zig` 汇总导出 core 模块；`src/cli/` 经叶子文件与 lib 消费。模块自己的
+  测试（`*_test.zig`）可直连叶子，以触达刻意不公开的纯函数守卫——`store.zig` 的路径守卫、段解析器
+  与遍历排序比较器。
+- **允许依赖**：仅 Zig 标准库（含 `std.Io`）。
 - **禁止**：任何助手/宿主 SDK（pi、typebox 等）与任何 ThinkRail 包——这是 core 可独立单测的保证。
 
 ## 派生声明
@@ -36,11 +36,12 @@ pi-free 的规格模型：is-a-spec 规则、frontmatter 解析/序列化与就�
 
 | 叶子 | 职责 | 依赖 |
 | --- | --- | --- |
-| `parse.ts` | 文件 → `{ frontmatter, body }`；is-a-spec 规则；frontmatter 解析（有损读方言）+ 序列化；`updateFrontmatterText` 无损就地编辑；`FIELDS` 注册表与有限词汇元组 | — |
-| `graph.ts` | 文件 → 节点 + 边（parent 树、DAG + 反向）；重复 id 记录 | `parse` |
-| `query.ts` | 带元数据过滤的内容 grep；有界图切片 | `parse`, `graph` |
-| `validate.ts` | 悬空链接、重复 id、parent 环 | `parse`, `graph` |
-| `store.ts` | `SpecIndex`：按需 fs glob + 每文件解析缓存 + 记忆化图；可索引路径规则（`resolveSpecPath`） | `parse`, `graph`, `query` |
+| `parse.zig` | 文件 → `{ frontmatter, body }`；is-a-spec 规则；frontmatter 子集解析 + 规范序列化；`updateFrontmatterText` 行级保留编辑；字段注册表与有限词汇元组 | — |
+| `graph.zig` | 文件 → 节点 + 边（parent 树、DAG + 反向）；重复 id 记录 | `parse` |
+| `query.zig` | 带元数据过滤的内容 grep；有界图切片 | `parse`, `graph`, `regex` |
+| `validate.zig` | 悬空链接、重复 id、parent 环 | `parse`, `graph` |
+| `store.zig` | `SpecIndex`：按需 fs 遍历 + 每文件解析缓存 + 记忆化图；可索引路径规则（`resolveSpecPath`） | `parse`, `graph`, `query` |
+| `regex.zig` | 子集正则引擎（字面量/`.`/类/转义/分组/选择/量词 `{n,m}`/锚点；字节级回溯 NFA；忽略大小写按 ASCII 折叠；不支持 lookaround、反向引用、`\b`） | — |
 
 ## 不变量（自源保留）
 
@@ -49,9 +50,9 @@ pi-free 的规格模型：is-a-spec 规则、frontmatter 解析/序列化与就�
   绝不提供过期图。
 - glob 先把每个目录的条目过滤成遍历候选（未忽略目录 + `.md` 文件），**然后**才做归一化与排序：
   满是无关条目的目录只付出一次被丢弃的扫描。
-- 该顺序是**全序**：候选按 **NFC 归一化**名比较，同键再按原始名的码元打破平局。因此规格顺序——
-  以及重复 `id` 的胜出文件——在每个文件系统上都一致：不是 `readdir` 的偶然顺序，不因分解（NFD）名
-  而不同，也不因两个规范等价拼写（预组合 `é` vs `e\u0301`）共享同一个 NFC 键而被稳定排序留在原处。
+- 该顺序是**全序**：候选按**字节序**比较（源实现为 NFC 归一化名 + 原始名平局；此处为记录在案的
+  契约级偏差，见根 SPEC「移植偏差」）。因此规格顺序——以及重复 `id` 的胜出文件——在每个文件系统上
+  都一致：不是 `readdir` 的偶然顺序。
   目录与 `.md` 文件保持**同一个**候选列表，子目录落位于其兄弟文件之间而非全体之前或之后，
   规格序列端到端按名排序。过滤-再排序的改写**保持**了这一性质而非引入它；测试存在，是因为
   “两个列表”是显而易见的写法，且会悄悄挪动重复 `id` 的胜者。
@@ -67,7 +68,7 @@ pi-free 的规格模型：is-a-spec 规则、frontmatter 解析/序列化与就�
   目录、还是指回已索引目录都被拒绝——每种情况下它创建的文件对其余规格工具都不可见。
 - `resolveSpecPath` 在判定或报告前把每个组件规范化为其**磁盘拼写**。字节已与其父目录某条目一致的
   组件按原样采用；在该文件系统上可解析但字节不完全匹配任何条目（大小写不敏感或 Unicode 折叠的
-  文件系统）的组件，变成父目录中唯一按 `normalize("NFC").toLowerCase()` 相等的条目。零个或两个
+  文件系统）的组件，变成父目录中唯一按 ASCII 大小写折叠相等的条目。零个或两个
   这样的条目是**错误**：宁失败也不猜身份。规范化在第一个不可解析组件处停止，其余保留调用方拼写，
   因为在大小写敏感文件系统上，新建 `Docs/` 与既有 `docs/` 并排确实是 glob 会看到的新目录。
   `rel` 与 `abs` 由这些规范段组装，绝不来自词法拼写。词法 `rel` 正是让 `NODE_MODULES/SPEC.md`
@@ -78,8 +79,8 @@ pi-free 的规格模型：is-a-spec 规则、frontmatter 解析/序列化与就�
   规范化读取**父目录**的列表，所以每个存在的父目录都被列出——不只是组件存在的那些——存在但无法
   列出的父目录是**错误**，绝不是空列表。那次 `readdir` 正是 glob 在该处的调用：解析器无法列出的
   目录，也是 glob 放弃的目录；写在其下的规格会像 `node_modules` 里的一样不可见。
-- **写路径宁可多拒；读路径保持精确。** `resolveSpecPath` 用每组件 `normalize("NFC").toLowerCase()`
-  折叠匹配 `IGNORED_DIRS`，因此拒绝任何拼写的 `NODE_MODULES/SPEC.md`；glob 只匹配逐字节的
+- **写路径宁可多拒；读路径保持精确。** `resolveSpecPath` 用每组件 **ASCII 大小写折叠**
+  匹配 `IGNORED_DIRS`，因此拒绝任何拼写的 `NODE_MODULES/SPEC.md`；glob 只匹配逐字节的
   `readdir` 名。两种错误不对称：解析器多拒给调用方可行动的理由；glob 多跳会把人真的命名为
   `Build/` 的目录静默排除出索引。仅凭规范化触达不到写路径，因为它只对已存在的组件发言：在尚未
   安装 `node_modules` 的项目上，`NODE_MODULES/SPEC.md` 能解析、在大小写不敏感文件系统上创建真实
@@ -92,9 +93,10 @@ pi-free 的规格模型：is-a-spec 规则、frontmatter 解析/序列化与就�
   与 frontmatter 字段名（`FIELDS` 注册表）单一来源 `as const`——无重复字面量列表，改名是一行改动。
   `core/` 不依赖 typebox。
 - 读路径把 frontmatter 强制为标量/字符串数组方言（有损——嵌套映射与注释被丢弃），对派生模型足够。
-  写路径（`updateFrontmatterText`）是**无损**的：就地变更活的 `yaml` Document，未触碰字段保持顺序，
-  注释/嵌套值存活。字段顺序**保持，绝不重排**——`FIELD_ORDER` 只是 `specrail create` 构建**新**
-  frontmatter 的顺序。围栏内行去掉 `\r` 是 CRLF 文件能解析的原因。
+  写路径（`updateFrontmatterText`）是**行级保留**的：未触碰行逐字节保留（含注释、嵌套块、原始引用
+  风格与块列表），仅被编辑的键重写为规范形式（列表重写为行内流式；多行值写为 `|-` 块标量——源实现
+  输出一种 plain 多行形态，记录为契约级偏差）。字段顺序**保持，绝不重排**——`FIELD_ORDER` 只是
+  `specrail create` 构建**新** frontmatter 的顺序。围栏内行去掉 `\r` 是 CRLF 文件能解析的原因。
 - 写路径**只重写 frontmatter 块**：正文逐字节拼回，前导 BOM 复位，重写块使用的行尾取自 frontmatter
   自身的首换行（LF 或 CRLF）。不从正文推断任何东西——正文恰好混用行尾的文件保留它的每个正文字节，
   这使“`specrail update` 永不编辑正文”对字节成立，而不只对字段成立。

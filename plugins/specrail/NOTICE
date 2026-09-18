@@ -13,3 +13,9 @@ This product is a derivative work of the ThinkRail project.
 The Apache License 2.0 does not grant permission to use the trade names, trademarks,
 or product names of the licensor, except as required for reasonable and customary
 use in describing the origin of the work.
+
+The bundled executables under `plugins/specrail/libexec/` are built with the Zig
+compiler (version 0.16.0) and statically include the Zig standard library and the
+compiler runtime components shipped with Zig, which are distributed under the MIT
+license, Copyright (c) Zig contributors. See `licenses/zig-MIT.txt`. No Bun
+runtime or JavaScript dependencies are included.

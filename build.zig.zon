@@ -1,0 +1,23 @@
+.{
+    .name = .specrail,
+    .version = "0.1.0",
+    .fingerprint = 0x55263ed8ad66d3fb,
+    .minimum_zig_version = "0.16.0",
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "VERSION",
+        "src",
+        "skills",
+        "bin",
+        "test",
+        "README.md",
+        "SPEC.md",
+        "LICENSE",
+        "NOTICE",
+        "licenses",
+        "plugins",
+        ".qoder-plugin",
+        ".claude-plugin",
+    },
+}

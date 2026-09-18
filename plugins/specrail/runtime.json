@@ -1,6 +1,6 @@
 {
-  "runtime": "bun",
-  "version": "1.4.2",
+  "runtime": "zig",
+  "version": "0.16.0",
   "targets": [
     "darwin-arm64",
     "darwin-x64",

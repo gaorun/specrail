@@ -1,0 +1,276 @@
+[
+  {
+    "name": "empty",
+    "argv": [],
+    "options": {},
+    "result": {
+      "values": {},
+      "positionals": []
+    }
+  },
+  {
+    "name": "help-short",
+    "argv": [
+      "-h"
+    ],
+    "options": {},
+    "result": {
+      "values": {
+        "help": true
+      },
+      "positionals": []
+    }
+  },
+  {
+    "name": "version-long",
+    "argv": [
+      "--version"
+    ],
+    "options": {},
+    "result": {
+      "values": {
+        "version": true
+      },
+      "positionals": []
+    }
+  },
+  {
+    "name": "bundled-hv",
+    "argv": [
+      "-hv"
+    ],
+    "options": {},
+    "result": {
+      "values": {
+        "help": true,
+        "version": true
+      },
+      "positionals": []
+    }
+  },
+  {
+    "name": "unknown-long",
+    "argv": [
+      "--bogus"
+    ],
+    "options": {},
+    "error": "Unknown option '--bogus'. To specify a positional argument starting with a '-', place it at the end of the command after '--', as in '-- \"--bogus\"",
+    "errorCode": "ERR_PARSE_ARGS_UNKNOWN_OPTION"
+  },
+  {
+    "name": "unknown-short",
+    "argv": [
+      "-b"
+    ],
+    "options": {},
+    "error": "Unknown option '-b'. To specify a positional argument starting with a '-', place it at the end of the command after '--', as in '-- \"-b\"",
+    "errorCode": "ERR_PARSE_ARGS_UNKNOWN_OPTION"
+  },
+  {
+    "name": "missing-arg",
+    "argv": [
+      "--root"
+    ],
+    "options": {},
+    "error": "Option '--root <value>' argument missing",
+    "errorCode": "ERR_PARSE_ARGS_INVALID_OPTION_VALUE"
+  },
+  {
+    "name": "boolean-with-value",
+    "argv": [
+      "--json=x"
+    ],
+    "options": {},
+    "error": "Option '--json' does not take an argument",
+    "errorCode": "ERR_PARSE_ARGS_INVALID_OPTION_VALUE"
+  },
+  {
+    "name": "boolean-then-positional",
+    "argv": [
+      "--json",
+      "x"
+    ],
+    "options": {},
+    "result": {
+      "values": {
+        "json": true
+      },
+      "positionals": [
+        "x"
+      ]
+    }
+  },
+  {
+    "name": "value-equals-form",
+    "argv": [
+      "--root=/tmp",
+      "--type",
+      "t"
+    ],
+    "options": {
+      "type": {
+        "type": "string"
+      }
+    },
+    "result": {
+      "values": {
+        "root": "/tmp",
+        "type": "t"
+      },
+      "positionals": []
+    }
+  },
+  {
+    "name": "ambiguous-dash-next",
+    "argv": [
+      "--root",
+      "--json"
+    ],
+    "options": {},
+    "error": "Option '--root' argument is ambiguous.\nDid you forget to specify the option argument for '--root'?\nTo specify an option argument starting with a dash use '--root=-XYZ'.",
+    "errorCode": "ERR_PARSE_ARGS_INVALID_OPTION_VALUE"
+  },
+  {
+    "name": "ambiguous-dash-next-unknown",
+    "argv": [
+      "--root",
+      "-x"
+    ],
+    "options": {},
+    "error": "Option '--root' argument is ambiguous.\nDid you forget to specify the option argument for '--root'?\nTo specify an option argument starting with a dash use '--root=-XYZ'.",
+    "errorCode": "ERR_PARSE_ARGS_INVALID_OPTION_VALUE"
+  },
+  {
+    "name": "dash-value-equals",
+    "argv": [
+      "--root=-x"
+    ],
+    "options": {},
+    "result": {
+      "values": {
+        "root": "-x"
+      },
+      "positionals": []
+    }
+  },
+  {
+    "name": "terminator",
+    "argv": [
+      "--",
+      "a",
+      "b",
+      "-c"
+    ],
+    "options": {},
+    "result": {
+      "values": {},
+      "positionals": [
+        "a",
+        "b",
+        "-c"
+      ]
+    }
+  },
+  {
+    "name": "positional-dash-late",
+    "argv": [
+      "arg1",
+      "--",
+      "--dash"
+    ],
+    "options": {},
+    "result": {
+      "values": {},
+      "positionals": [
+        "arg1",
+        "--dash"
+      ]
+    }
+  },
+  {
+    "name": "repeated-string-last-wins",
+    "argv": [
+      "--root",
+      "r1",
+      "--root",
+      "r2"
+    ],
+    "options": {},
+    "result": {
+      "values": {
+        "root": "r2"
+      },
+      "positionals": []
+    }
+  },
+  {
+    "name": "multiple-collects",
+    "argv": [
+      "--tags",
+      "a",
+      "--tags",
+      "b"
+    ],
+    "options": {
+      "tags": {
+        "type": "string",
+        "multiple": true
+      }
+    },
+    "result": {
+      "values": {
+        "tags": [
+          "a",
+          "b"
+        ]
+      },
+      "positionals": []
+    }
+  },
+  {
+    "name": "empty-value",
+    "argv": [
+      "--root",
+      ""
+    ],
+    "options": {},
+    "result": {
+      "values": {
+        "root": ""
+      },
+      "positionals": []
+    }
+  },
+  {
+    "name": "number-flag-ok",
+    "argv": [
+      "--depth",
+      "1.5"
+    ],
+    "options": {
+      "depth": {
+        "type": "string"
+      }
+    },
+    "result": {
+      "values": {
+        "depth": "1.5"
+      },
+      "positionals": []
+    }
+  },
+  {
+    "name": "short-unknown-combined",
+    "argv": [
+      "-vh"
+    ],
+    "options": {},
+    "result": {
+      "values": {
+        "version": true,
+        "help": true
+      },
+      "positionals": []
+    }
+  }
+]

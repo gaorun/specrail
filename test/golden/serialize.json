@@ -1,0 +1,567 @@
+[
+  {
+    "name": "minimal",
+    "entries": [
+      [
+        "id",
+        "specrail"
+      ],
+      [
+        "type",
+        "module-design"
+      ],
+      [
+        "title",
+        "specrail CLI"
+      ]
+    ],
+    "output": "---\nid: specrail\ntype: module-design\ntitle: specrail CLI\n---\n"
+  },
+  {
+    "name": "em-dash-cjk-title",
+    "entries": [
+      [
+        "title",
+        "specrail — 跨助手规格 CLI"
+      ]
+    ],
+    "output": "---\ntitle: specrail — 跨助手规格 CLI\n---\n"
+  },
+  {
+    "name": "cjk-only",
+    "entries": [
+      [
+        "title",
+        "规格图"
+      ]
+    ],
+    "output": "---\ntitle: 规格图\n---\n"
+  },
+  {
+    "name": "colon-space",
+    "entries": [
+      [
+        "title",
+        "a: b"
+      ]
+    ],
+    "output": "---\ntitle: \"a: b\"\n---\n"
+  },
+  {
+    "name": "colon-nospace",
+    "entries": [
+      [
+        "title",
+        "a:b"
+      ]
+    ],
+    "output": "---\ntitle: a:b\n---\n"
+  },
+  {
+    "name": "url",
+    "entries": [
+      [
+        "title",
+        "https://example.com/x?y=1"
+      ]
+    ],
+    "output": "---\ntitle: https://example.com/x?y=1\n---\n"
+  },
+  {
+    "name": "hash-space",
+    "entries": [
+      [
+        "title",
+        "a # b"
+      ]
+    ],
+    "output": "---\ntitle: \"a # b\"\n---\n"
+  },
+  {
+    "name": "hash-lead",
+    "entries": [
+      [
+        "title",
+        "#lead"
+      ]
+    ],
+    "output": "---\ntitle: \"#lead\"\n---\n"
+  },
+  {
+    "name": "double-quote",
+    "entries": [
+      [
+        "title",
+        "he said \"hi\""
+      ]
+    ],
+    "output": "---\ntitle: he said \"hi\"\n---\n"
+  },
+  {
+    "name": "single-quote",
+    "entries": [
+      [
+        "title",
+        "it's fine"
+      ]
+    ],
+    "output": "---\ntitle: it's fine\n---\n"
+  },
+  {
+    "name": "lead-dash",
+    "entries": [
+      [
+        "title",
+        "- item"
+      ]
+    ],
+    "output": "---\ntitle: \"- item\"\n---\n"
+  },
+  {
+    "name": "lead-question",
+    "entries": [
+      [
+        "title",
+        "? q"
+      ]
+    ],
+    "output": "---\ntitle: \"? q\"\n---\n"
+  },
+  {
+    "name": "lead-at",
+    "entries": [
+      [
+        "title",
+        "@at"
+      ]
+    ],
+    "output": "---\ntitle: \"@at\"\n---\n"
+  },
+  {
+    "name": "lead-star",
+    "entries": [
+      [
+        "title",
+        "*star"
+      ]
+    ],
+    "output": "---\ntitle: \"*star\"\n---\n"
+  },
+  {
+    "name": "lead-amp",
+    "entries": [
+      [
+        "title",
+        "&amp"
+      ]
+    ],
+    "output": "---\ntitle: \"&amp\"\n---\n"
+  },
+  {
+    "name": "lead-bang",
+    "entries": [
+      [
+        "title",
+        "!bang"
+      ]
+    ],
+    "output": "---\ntitle: \"!bang\"\n---\n"
+  },
+  {
+    "name": "lead-percent",
+    "entries": [
+      [
+        "title",
+        "%pct"
+      ]
+    ],
+    "output": "---\ntitle: \"%pct\"\n---\n"
+  },
+  {
+    "name": "brace-bracket",
+    "entries": [
+      [
+        "title",
+        "{brace"
+      ]
+    ],
+    "output": "---\ntitle: \"{brace\"\n---\n"
+  },
+  {
+    "name": "bracket",
+    "entries": [
+      [
+        "title",
+        "[brack"
+      ]
+    ],
+    "output": "---\ntitle: \"[brack\"\n---\n"
+  },
+  {
+    "name": "number-int",
+    "entries": [
+      [
+        "title",
+        "123"
+      ]
+    ],
+    "output": "---\ntitle: \"123\"\n---\n"
+  },
+  {
+    "name": "number-float",
+    "entries": [
+      [
+        "title",
+        "1.5"
+      ]
+    ],
+    "output": "---\ntitle: \"1.5\"\n---\n"
+  },
+  {
+    "name": "number-negative",
+    "entries": [
+      [
+        "title",
+        "-3"
+      ]
+    ],
+    "output": "---\ntitle: \"-3\"\n---\n"
+  },
+  {
+    "name": "number-hex",
+    "entries": [
+      [
+        "title",
+        "0x10"
+      ]
+    ],
+    "output": "---\ntitle: \"0x10\"\n---\n"
+  },
+  {
+    "name": "number-exp",
+    "entries": [
+      [
+        "title",
+        "1e3"
+      ]
+    ],
+    "output": "---\ntitle: \"1e3\"\n---\n"
+  },
+  {
+    "name": "number-leading-zero",
+    "entries": [
+      [
+        "title",
+        "007"
+      ]
+    ],
+    "output": "---\ntitle: \"007\"\n---\n"
+  },
+  {
+    "name": "word-true",
+    "entries": [
+      [
+        "title",
+        "true"
+      ]
+    ],
+    "output": "---\ntitle: \"true\"\n---\n"
+  },
+  {
+    "name": "word-false",
+    "entries": [
+      [
+        "title",
+        "false"
+      ]
+    ],
+    "output": "---\ntitle: \"false\"\n---\n"
+  },
+  {
+    "name": "word-null",
+    "entries": [
+      [
+        "title",
+        "null"
+      ]
+    ],
+    "output": "---\ntitle: \"null\"\n---\n"
+  },
+  {
+    "name": "word-yes",
+    "entries": [
+      [
+        "title",
+        "yes"
+      ]
+    ],
+    "output": "---\ntitle: yes\n---\n"
+  },
+  {
+    "name": "word-on",
+    "entries": [
+      [
+        "title",
+        "on"
+      ]
+    ],
+    "output": "---\ntitle: on\n---\n"
+  },
+  {
+    "name": "word-tilde",
+    "entries": [
+      [
+        "title",
+        "~"
+      ]
+    ],
+    "output": "---\ntitle: \"~\"\n---\n"
+  },
+  {
+    "name": "date",
+    "entries": [
+      [
+        "title",
+        "2026-09-18"
+      ]
+    ],
+    "output": "---\ntitle: 2026-09-18\n---\n"
+  },
+  {
+    "name": "datetime",
+    "entries": [
+      [
+        "title",
+        "2026-09-18T10:00:00Z"
+      ]
+    ],
+    "output": "---\ntitle: 2026-09-18T10:00:00Z\n---\n"
+  },
+  {
+    "name": "pad-spaces",
+    "entries": [
+      [
+        "title",
+        " pad "
+      ]
+    ],
+    "output": "---\ntitle: \" pad \"\n---\n"
+  },
+  {
+    "name": "tab-inside",
+    "entries": [
+      [
+        "title",
+        "tab\tinside"
+      ]
+    ],
+    "output": "---\ntitle: tab\tinside\n---\n"
+  },
+  {
+    "name": "backslash",
+    "entries": [
+      [
+        "title",
+        "a\\b"
+      ]
+    ],
+    "output": "---\ntitle: a\\b\n---\n"
+  },
+  {
+    "name": "multiline",
+    "entries": [
+      [
+        "title",
+        "line1\nline2"
+      ]
+    ],
+    "output": "---\ntitle: |-\n  line1\n  line2\n---\n"
+  },
+  {
+    "name": "long-value",
+    "entries": [
+      [
+        "title",
+        "x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x"
+      ]
+    ],
+    "output": "---\ntitle: x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x x\n---\n"
+  },
+  {
+    "name": "emoji",
+    "entries": [
+      [
+        "title",
+        "🚀 spec"
+      ]
+    ],
+    "output": "---\ntitle: 🚀 spec\n---\n"
+  },
+  {
+    "name": "accented-nfc",
+    "entries": [
+      [
+        "title",
+        "café"
+      ]
+    ],
+    "output": "---\ntitle: café\n---\n"
+  },
+  {
+    "name": "accented-nfd",
+    "entries": [
+      [
+        "title",
+        "café"
+      ]
+    ],
+    "output": "---\ntitle: café\n---\n"
+  },
+  {
+    "name": "list-tags",
+    "entries": [
+      [
+        "tags",
+        [
+          "a",
+          "b"
+        ]
+      ]
+    ],
+    "output": "---\ntags: [a, b]\n---\n"
+  },
+  {
+    "name": "list-single",
+    "entries": [
+      [
+        "tags",
+        [
+          "solo"
+        ]
+      ]
+    ],
+    "output": "---\ntags: [solo]\n---\n"
+  },
+  {
+    "name": "list-special-items",
+    "entries": [
+      [
+        "covers",
+        [
+          "a: b",
+          "123",
+          "true",
+          "é",
+          "规格"
+        ]
+      ]
+    ],
+    "output": "---\ncovers: [\"a: b\", \"123\", \"true\", é, 规格]\n---\n"
+  },
+  {
+    "name": "list-item-comma",
+    "entries": [
+      [
+        "covers",
+        [
+          "a, b"
+        ]
+      ]
+    ],
+    "output": "---\ncovers: [\"a, b\"]\n---\n"
+  },
+  {
+    "name": "list-item-quote",
+    "entries": [
+      [
+        "covers",
+        [
+          "say \"hi\""
+        ]
+      ]
+    ],
+    "output": "---\ncovers: [say \"hi\"]\n---\n"
+  },
+  {
+    "name": "empty-string-scalar",
+    "entries": [
+      [
+        "title",
+        ""
+      ]
+    ],
+    "output": "---\n---\n"
+  },
+  {
+    "name": "empty-list",
+    "entries": [
+      [
+        "tags",
+        []
+      ]
+    ],
+    "output": "---\n---\n"
+  },
+  {
+    "name": "mixed-empty-dropped",
+    "entries": [
+      [
+        "id",
+        "x"
+      ],
+      [
+        "title",
+        ""
+      ],
+      [
+        "tags",
+        []
+      ],
+      [
+        "status",
+        "active"
+      ]
+    ],
+    "output": "---\nid: x\nstatus: active\n---\n"
+  },
+  {
+    "name": "unknown-key-order",
+    "entries": [
+      [
+        "zzz",
+        "1"
+      ],
+      [
+        "id",
+        "x"
+      ],
+      [
+        "type",
+        "task-spec"
+      ],
+      [
+        "title",
+        "t"
+      ]
+    ],
+    "output": "---\nzzz: \"1\"\nid: x\ntype: task-spec\ntitle: t\n---\n"
+  },
+  {
+    "name": "only-special",
+    "entries": [
+      [
+        "id",
+        "id"
+      ],
+      [
+        "type",
+        "type"
+      ],
+      [
+        "title",
+        "титул"
+      ]
+    ],
+    "output": "---\nid: id\ntype: type\ntitle: титул\n---\n"
+  }
+]

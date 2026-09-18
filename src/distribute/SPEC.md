@@ -16,15 +16,16 @@ tags: [distribute, adapters, init, sync]
 
 - **拥有**：助手面表（工具 → 技能根 / 命令面 / frontmatter / 参数注入）、技能源读取（frontmatter 解析）、
   期望文件集、写盘与清单内删除、AGENTS.md 规则块。
-- **公开面**：`adapters.ts` 的 `GeneratedFile`、`SkillFile`、`SkillMeta`、`SkillSource`、`SKILL_PREFIX`、
-  `TOOLS`、`Tool`、`renderSkillFiles`、`renderCommandFiles`；`config.ts` 的 `DistributeError`、`errorDetail`、
-  `CONFIG_DIR`、`CONFIG_PATH`、`DistributeConfig`、`readConfig`、`writeConfig`；`rule.ts` 的 `RULE_BEGIN`、
-  `RULE_END`、`RULE_TEXT`、`hasRuleBlock`、`upsertRuleBlock`；`generate.ts` 的 `InitOptions`、`SyncOptions`、
-  `ApplyReport`、`packagedSkillsDir`、`readSkills`、`expectedFiles`、`initProject`、`syncProject`。
-- **允许依赖**：`yaml`、Node 内置模块。`src/cli/` 只经上述叶子消费（`commands/{init,sync}.ts` 做参数解析
-  与打印，编排全部在 `generate.ts`，测试直接驱动编排）。
-- **禁止**：`src/core/`（distribute 不解析规格图）；任何助手 SDK；不写 stdout、不改退出码——错误以
-  `DistributeError` 抛出，由 `src/cli/main.ts` 映射为退出码 2。
+- **公开面**：`adapters.zig` 的 `GeneratedFile`、`SkillFile`、`Skill`、`SKILL_PREFIX`、`TOOL_NAMES`、
+  `Tool`、`renderSkillFiles`、`renderCommandFiles`；`config.zig` 的 `CONFIG_DIR`、`CONFIG_PATH`、
+  `DistributeConfig`、`readConfig`、`writeConfig`；`rule.zig` 的 `RULE_BEGIN`、`RULE_END`、`RULE_TEXT`、
+  `hasRuleBlock`、`upsertRuleBlock`；`generate.zig` 的 `ApplyReport`、`readSkillsFromDir`、`expectedFiles`、
+  `initProject`、`syncProject`。错误经共享的 `src/errors.zig` 以 `error.Distribute` + 消息变量抛出，
+  由 `cli/main.zig` 映射为退出码 2。
+- **允许依赖**：仅 Zig 标准库；复用 `src/core/parse.zig` 的子集解析读取 `SKILL.md` frontmatter（不含
+  任何图/查询逻辑）。`src/cli/` 只经上述叶子消费（`commands/{init,sync}.zig` 做参数解析与打印，
+  编排全部在 `generate.zig`，测试直接驱动编排）。
+- **禁止**：图/查询逻辑；任何助手 SDK；不写 stdout、不改退出码。
 
 ## 叶子与依赖图
 
@@ -32,10 +33,11 @@ tags: [distribute, adapters, init, sync]
 
 | 叶子 | 职责 | 依赖 |
 | --- | --- | --- |
-| `adapters.ts` | 助手面表与纯渲染：技能文件按工具根落位、命令文件按工具 frontmatter 生成 | — |
-| `config.ts` | `.specrail/config.json` 读写与形状/路径校验；`DistributeError` 与错误消息工具 | `adapters` |
-| `rule.ts` | AGENTS.md 托管块：标记常量、逐字规则文本、就地 upsert、块存在性判断 | `config` |
-| `generate.ts` | 技能源读取与校验、期望文件集、写盘与清单内删除、init/sync 编排、打包内技能源定位 | `adapters`, `config`, `rule` |
+| `adapters.zig` | 助手面表与纯渲染：技能文件按工具根落位、命令文件按工具 frontmatter 生成 | — |
+| `config.zig` | `.specrail/config.json` 读写与形状/路径校验（精确 JSON 输出） | `adapters` |
+| `rule.zig` | AGENTS.md 托管块：标记常量、逐字规则文本、就地 upsert、块存在性判断 | — |
+| `generate.zig` | 技能源读取与校验、期望文件集、写盘与清单内删除、init/sync 编排 | `adapters`, `config`, `rule` |
+| `tools/embed_skills.zig`（构建期） | 以同一 `readSkillsFromDir` 校验 `skills/` 并生成编译期内嵌的技能表 | `generate` |
 
 ## 适配器核实结论
 
@@ -76,10 +78,10 @@ tags: [distribute, adapters, init, sync]
 
 ## 生成物与清单治理
 
-- **期望文件集** = f(技能源目录, 所选工具)：按字节序读取技能源（目录名须等于 frontmatter `name`、以
-  `specrail-` 开头、`description` 非空；`SKILL.md` 与兄弟文档整体逐字节复制），再按工具渲染技能与命令文件，
-  最后按路径字节序合并。技能源目录是**参数**：CLI 指向打包内的 `skills/`（相对 `import.meta.url` 取
-  `../skills/`、`../../skills/` 先存在者），测试指向临时 fixture。
+- **期望文件集** = f(技能表, 所选工具)：技能源按名排序读取（目录名须等于 frontmatter `name`、以
+  `specrail-` 开头、`description` 非空；`SKILL.md` 与兄弟文档整体逐字节复制），再按工具渲染技能与命令
+  文件，最后按路径字节序合并。技能源是**参数**：CLI 传入编译期内嵌的技能表（构建期由
+  `tools/embed_skills.zig` 以同一 `readSkillsFromDir` 校验 `skills/` 后生成），测试注入临时目录。
 - `.specrail/config.json` = `{ version, tools, files }`：`version` 为当前 specrail 版本；`tools` 保序去重；
   `files` 为期望文件集的相对路径。读取时校验形状与路径安全（根内相对、拒绝绝对路径/`..`/反斜杠），
   损坏或不合法清单以 `DistributeError` 报出可执行的理由，绝不静默降级。
@@ -97,5 +99,6 @@ tags: [distribute, adapters, init, sync]
 - 适配器是纯渲染（无 fs）；fs 只出现在 `config`/`rule`/`generate` 三个叶子。
 - 排序一律按字节（`compareText`），不依赖 locale，生成物与清单顺序跨机器一致。
 - 目录名 = frontmatter `name` = `specrail-<id>`；命令名 `id` 只由 `name` 前缀派生，不另设来源。
-- 技能内容不重写：只有命令文件与清单是生成的，技能文件逐字节复制。
+- 技能内容不重写：只有命令文件与清单是生成的，技能文件逐字节复制；内嵌副本与 `skills/` 的漂移由
+  构建期校验与 `plugin-smoke` 的逐字节比对拦截。
 - 校验先于写盘：技能源与清单在写任何文件前完成校验（init 在技能源缺失时不留下清单）。

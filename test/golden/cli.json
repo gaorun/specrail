@@ -1,0 +1,385 @@
+[
+  {
+    "name": "version",
+    "argv": [
+      "--version"
+    ],
+    "stdout": "0.1.0\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "name": "help",
+    "argv": [
+      "--help"
+    ],
+    "stdout": "specrail 0.1.0 — spec-graph CLI with cross-assistant workflow skills\n  init      install skills and commands into assistant config (--tools, --rule)\n  sync      refresh generated files and remove deselected tool outputs\n  list      list spec nodes (--type, --tag, --json)\n  show      show one spec by id (--json)\n  grep      search specs (--regex, --ignore-case, --type, --tag, --parent, --depends-on, --limit)\n  graph     walk a graph slice (--direction, --depth, --edge)\n  create    create a spec file\n  update    edit a spec's frontmatter\n  delete    delete a spec file (--yes)\n  validate  validate the spec graph (--json)\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "name": "no-args-help",
+    "argv": [],
+    "stdout": "specrail 0.1.0 — spec-graph CLI with cross-assistant workflow skills\n  init      install skills and commands into assistant config (--tools, --rule)\n  sync      refresh generated files and remove deselected tool outputs\n  list      list spec nodes (--type, --tag, --json)\n  show      show one spec by id (--json)\n  grep      search specs (--regex, --ignore-case, --type, --tag, --parent, --depends-on, --limit)\n  graph     walk a graph slice (--direction, --depth, --edge)\n  create    create a spec file\n  update    edit a spec's frontmatter\n  delete    delete a spec file (--yes)\n  validate  validate the spec graph (--json)\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "name": "unknown-command",
+    "argv": [
+      "frobnicate"
+    ],
+    "stdout": "",
+    "stderr": "Unknown command: frobnicate\n",
+    "exit": 2
+  },
+  {
+    "name": "unknown-flag",
+    "argv": [
+      "list",
+      "--bogus"
+    ],
+    "stdout": "",
+    "stderr": "Unknown option '--bogus'. To specify a positional argument starting with a '-', place it at the end of the command after '--', as in '-- \"--bogus\"\n",
+    "exit": 2
+  },
+  {
+    "name": "list",
+    "argv": [
+      "list"
+    ],
+    "stdout": "arch [architecture-design] — Arch (specs/arch.md)\ncyc-a [module-design] — Cycle A (specs/cyc-a.md)\ncyc-b [module-design] — Cycle B (specs/cyc-b.md)\ndangling [task-spec] — Dangling (specs/dangling.md)\ndup [task-spec] — Dup One (specs/dup-one.md)\ngoal [goal-and-requirements] — 目标 — golden fixture (specs/goal.md)\nmodule-x [module-design] — Module X (specs/module-x.md)\ntask-a [task-spec] — Task A (specs/task-a.md)\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "name": "list-json",
+    "argv": [
+      "list",
+      "--json"
+    ],
+    "stdout": "[\n  {\n    \"id\": \"arch\",\n    \"type\": \"architecture-design\",\n    \"title\": \"Arch\",\n    \"path\": \"specs/arch.md\"\n  },\n  {\n    \"id\": \"cyc-a\",\n    \"type\": \"module-design\",\n    \"title\": \"Cycle A\",\n    \"path\": \"specs/cyc-a.md\"\n  },\n  {\n    \"id\": \"cyc-b\",\n    \"type\": \"module-design\",\n    \"title\": \"Cycle B\",\n    \"path\": \"specs/cyc-b.md\"\n  },\n  {\n    \"id\": \"dangling\",\n    \"type\": \"task-spec\",\n    \"title\": \"Dangling\",\n    \"path\": \"specs/dangling.md\"\n  },\n  {\n    \"id\": \"dup\",\n    \"type\": \"task-spec\",\n    \"title\": \"Dup One\",\n    \"path\": \"specs/dup-one.md\"\n  },\n  {\n    \"id\": \"goal\",\n    \"type\": \"goal-and-requirements\",\n    \"title\": \"目标 — golden fixture\",\n    \"path\": \"specs/goal.md\"\n  },\n  {\n    \"id\": \"module-x\",\n    \"type\": \"module-design\",\n    \"title\": \"Module X\",\n    \"path\": \"specs/module-x.md\"\n  },\n  {\n    \"id\": \"task-a\",\n    \"type\": \"task-spec\",\n    \"title\": \"Task A\",\n    \"path\": \"specs/task-a.md\"\n  }\n]\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "name": "list-type",
+    "argv": [
+      "list",
+      "--type",
+      "module-design"
+    ],
+    "stdout": "cyc-a [module-design] — Cycle A (specs/cyc-a.md)\ncyc-b [module-design] — Cycle B (specs/cyc-b.md)\nmodule-x [module-design] — Module X (specs/module-x.md)\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "name": "list-tag",
+    "argv": [
+      "list",
+      "--tag",
+      "cli"
+    ],
+    "stdout": "module-x [module-design] — Module X (specs/module-x.md)\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "name": "show",
+    "argv": [
+      "show",
+      "module-x"
+    ],
+    "stdout": "module-x [module-design] — Module X\npath: specs/module-x.md\nlinks:\n  parent -> arch (specs/arch.md)\nreferenced by:\n  parent -> task-a (specs/task-a.md)\n  depends-on -> task-a (specs/task-a.md)\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "name": "show-json",
+    "argv": [
+      "show",
+      "module-x",
+      "--json"
+    ],
+    "stdout": "{\n  \"id\": \"module-x\",\n  \"type\": \"module-design\",\n  \"title\": \"Module X\",\n  \"path\": \"specs/module-x.md\",\n  \"frontmatter\": {\n    \"id\": \"module-x\",\n    \"type\": \"module-design\",\n    \"status\": \"draft\",\n    \"title\": \"Module X\",\n    \"parent\": \"arch\",\n    \"covers\": [\n      \"alpha\",\n      \"beta\"\n    ],\n    \"tags\": [\n      \"core\",\n      \"cli\"\n    ]\n  },\n  \"links\": [\n    {\n      \"kind\": \"parent\",\n      \"target\": \"arch\",\n      \"path\": \"specs/arch.md\"\n    }\n  ],\n  \"reverseLinks\": [\n    {\n      \"kind\": \"parent\",\n      \"target\": \"task-a\",\n      \"path\": \"specs/task-a.md\"\n    },\n    {\n      \"kind\": \"depends-on\",\n      \"target\": \"task-a\",\n      \"path\": \"specs/task-a.md\"\n    }\n  ]\n}\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "name": "show-missing",
+    "argv": [
+      "show",
+      "nope"
+    ],
+    "stdout": "",
+    "stderr": "No spec with id \"nope\".\n",
+    "exit": 2
+  },
+  {
+    "name": "grep",
+    "argv": [
+      "grep",
+      "alpha"
+    ],
+    "stdout": "2 match(es):\nspecs/module-x.md:7: covers: [alpha, beta]\nspecs/module-x.md:13: body text alpha here\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "name": "grep-json",
+    "argv": [
+      "grep",
+      "alpha",
+      "--json"
+    ],
+    "stdout": "{\n  \"matches\": [\n    {\n      \"path\": \"specs/module-x.md\",\n      \"line\": 7,\n      \"snippet\": \"covers: [alpha, beta]\"\n    },\n    {\n      \"path\": \"specs/module-x.md\",\n      \"line\": 13,\n      \"snippet\": \"body text alpha here\"\n    }\n  ],\n  \"truncated\": false\n}\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "name": "grep-regex",
+    "argv": [
+      "grep",
+      "--regex",
+      "mod.*e"
+    ],
+    "stdout": "8 match(es):\nspecs/cyc-a.md:3: type: module-design\nspecs/cyc-b.md:3: type: module-design\nspecs/module-x.md:2: id: module-x\nspecs/module-x.md:3: type: module-design\nspecs/module-x.md:5: title: Module X\nspecs/module-x.md:11: # Module X\nspecs/task-a.md:6: parent: module-x\nspecs/task-a.md:7: depends-on: [module-x]\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "name": "grep-type",
+    "argv": [
+      "grep",
+      "e",
+      "--type",
+      "module-design"
+    ],
+    "stdout": "15 match(es):\nspecs/cyc-a.md:3: type: module-design\nspecs/cyc-a.md:4: title: Cycle A\nspecs/cyc-a.md:5: parent: cyc-b\nspecs/cyc-b.md:3: type: module-design\nspecs/cyc-b.md:4: title: Cycle B\nspecs/cyc-b.md:5: parent: cyc-a\nspecs/module-x.md:2: id: module-x\nspecs/module-x.md:3: type: module-design\nspecs/module-x.md:5: title: Module X\nspecs/module-x.md:6: parent: arch\nspecs/module-x.md:7: covers: [alpha, beta]\nspecs/module-x.md:8: tags: [core, cli]\nspecs/module-x.md:11: # Module X\nspecs/module-x.md:13: body text alpha here\nspecs/module-x.md:14: second line beta\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "name": "grep-limit",
+    "argv": [
+      "grep",
+      "e",
+      "--limit",
+      "2"
+    ],
+    "stdout": "2 match(es) (truncated):\nspecs/arch.md:3: type: architecture-design\nspecs/arch.md:4: status: active\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "name": "grep-bad-regex",
+    "argv": [
+      "grep",
+      "--regex",
+      "(unclosed"
+    ],
+    "stdout": "",
+    "stderr": "Invalid search pattern: Invalid regular expression: missing )\n",
+    "exit": 2
+  },
+  {
+    "name": "graph-subtree",
+    "argv": [
+      "graph",
+      "arch",
+      "--direction",
+      "subtree",
+      "--depth",
+      "2"
+    ],
+    "stdout": "Slice of \"arch\" (subtree, depth 2):\nnodes (3):\n  arch [architecture-design] — Arch (specs/arch.md)\n  module-x [module-design] — Module X (specs/module-x.md)\n  task-a [task-spec] — Task A (specs/task-a.md)\nedges (2):\n  module-x --parent--> arch\n  task-a --parent--> module-x\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "name": "graph-ancestors-json",
+    "argv": [
+      "graph",
+      "task-a",
+      "--direction",
+      "ancestors",
+      "--json"
+    ],
+    "stdout": "{\n  \"root\": \"task-a\",\n  \"direction\": \"ancestors\",\n  \"nodes\": [\n    {\n      \"id\": \"task-a\",\n      \"type\": \"task-spec\",\n      \"title\": \"Task A\",\n      \"path\": \"specs/task-a.md\",\n      \"frontmatter\": {\n        \"id\": \"task-a\",\n        \"type\": \"task-spec\",\n        \"status\": \"draft\",\n        \"title\": \"Task A\",\n        \"parent\": \"module-x\",\n        \"depends-on\": [\n          \"module-x\"\n        ]\n      }\n    },\n    {\n      \"id\": \"module-x\",\n      \"type\": \"module-design\",\n      \"title\": \"Module X\",\n      \"path\": \"specs/module-x.md\",\n      \"frontmatter\": {\n        \"id\": \"module-x\",\n        \"type\": \"module-design\",\n        \"status\": \"draft\",\n        \"title\": \"Module X\",\n        \"parent\": \"arch\",\n        \"covers\": [\n          \"alpha\",\n          \"beta\"\n        ],\n        \"tags\": [\n          \"core\",\n          \"cli\"\n        ]\n      }\n    }\n  ],\n  \"edges\": [\n    {\n      \"from\": \"task-a\",\n      \"to\": \"module-x\",\n      \"kind\": \"parent\"\n    }\n  ],\n  \"missing\": []\n}\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "name": "graph-neighbors",
+    "argv": [
+      "graph",
+      "module-x",
+      "--direction",
+      "neighbors",
+      "--edge",
+      "depends-on"
+    ],
+    "stdout": "Slice of \"module-x\" (neighbors, depth 1):\nnodes (2):\n  module-x [module-design] — Module X (specs/module-x.md)\n  task-a [task-spec] — Task A (specs/task-a.md)\nedges (1):\n  task-a --depends-on--> module-x\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "name": "graph-missing-id",
+    "argv": [
+      "graph",
+      "nope",
+      "--direction",
+      "subtree"
+    ],
+    "stdout": "",
+    "stderr": "No spec with id \"nope\".\n",
+    "exit": 2
+  },
+  {
+    "name": "validate",
+    "argv": [
+      "validate"
+    ],
+    "stdout": "Duplicate ids (1):\n  dup: specs/dup-one.md, specs/dup-two.md\n\nDangling links (2):\n  dangling (specs/dangling.md) --depends-on--> missing-node [missing]\n  dangling (specs/dangling.md) --references--> also-missing [missing]\n\nParent cycles (1):\n  cyc-a -> cyc-b -> cyc-a\n",
+    "stderr": "",
+    "exit": 1
+  },
+  {
+    "name": "validate-json",
+    "argv": [
+      "validate",
+      "--json"
+    ],
+    "stdout": "{\n  \"danglingLinks\": [\n    {\n      \"from\": \"dangling\",\n      \"fromPath\": \"specs/dangling.md\",\n      \"kind\": \"depends-on\",\n      \"target\": \"missing-node\"\n    },\n    {\n      \"from\": \"dangling\",\n      \"fromPath\": \"specs/dangling.md\",\n      \"kind\": \"references\",\n      \"target\": \"also-missing\"\n    }\n  ],\n  \"duplicateIds\": [\n    {\n      \"id\": \"dup\",\n      \"paths\": [\n        \"specs/dup-one.md\",\n        \"specs/dup-two.md\"\n      ]\n    }\n  ],\n  \"parentCycles\": [\n    {\n      \"ids\": [\n        \"cyc-a\",\n        \"cyc-b\"\n      ]\n    }\n  ]\n}\n",
+    "stderr": "",
+    "exit": 1
+  },
+  {
+    "name": "grep-limit-bad",
+    "argv": [
+      "grep",
+      "e",
+      "--limit",
+      "abc"
+    ],
+    "stdout": "",
+    "stderr": "--limit must be a number, got \"abc\"\n",
+    "exit": 2
+  },
+  {
+    "name": "sync-no-config",
+    "argv": [
+      "sync"
+    ],
+    "stdout": "",
+    "stderr": "No .specrail/config.json under /Users/run/my-repos/specrail/test/golden/cli-fixture. Run \"specrail init\" first.\n",
+    "exit": 2
+  },
+  {
+    "name": "root-missing",
+    "argv": [
+      "list",
+      "--root",
+      "/nonexistent/specrail-golden"
+    ],
+    "stdout": "",
+    "stderr": "Root directory does not exist: /nonexistent/specrail-golden\n",
+    "exit": 2
+  },
+  {
+    "name": "root-not-dir",
+    "argv": [
+      "list",
+      "--root",
+      "/Users/run/my-repos/specrail/test/golden/cli-fixture/specs/notes.txt"
+    ],
+    "stdout": "",
+    "stderr": "Root is not a directory: /Users/run/my-repos/specrail/test/golden/cli-fixture/specs/notes.txt\n",
+    "exit": 2
+  },
+  {
+    "name": "create",
+    "argv": [
+      "create",
+      "specs/new-spec.md",
+      "--id",
+      "new-spec",
+      "--type",
+      "task-spec",
+      "--title",
+      "New Spec",
+      "--tags",
+      "x",
+      "--tags",
+      "y"
+    ],
+    "stdout": "Created specs/new-spec.md (id: new-spec).\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "name": "create-result-file",
+    "argv": [],
+    "stdout": "---\nid: new-spec\ntype: task-spec\ntitle: New Spec\ntags: [x, y]\n---\n\n## Purpose\n\n## Open items\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "name": "create-duplicate-id",
+    "argv": [
+      "create",
+      "specs/again.md",
+      "--id",
+      "dup",
+      "--type",
+      "task-spec",
+      "--title",
+      "D"
+    ],
+    "stdout": "",
+    "stderr": "Spec id \"dup\" is already in use.\n",
+    "exit": 2
+  },
+  {
+    "name": "update",
+    "argv": [
+      "update",
+      "module-x",
+      "--set",
+      "status=active",
+      "--add-list",
+      "tags=extra"
+    ],
+    "stdout": "Updated frontmatter of specs/module-x.md (id: module-x).\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "name": "update-result-file",
+    "argv": [],
+    "stdout": "---\nid: module-x\ntype: module-design\nstatus: active\ntitle: Module X\nparent: arch\ncovers: [alpha, beta]\ntags: [core, cli, extra]\n---\n\n# Module X\n\nbody text alpha here\nsecond line beta\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "name": "delete",
+    "argv": [
+      "delete",
+      "module-x",
+      "--yes"
+    ],
+    "stdout": "Deleted specs/module-x.md (id: module-x).\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "name": "delete-non-interactive",
+    "argv": [
+      "delete",
+      "task-a"
+    ],
+    "stdout": "",
+    "stderr": "Refusing to delete without --yes (non-interactive).\n",
+    "exit": 2
+  }
+]
