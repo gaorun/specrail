@@ -21,8 +21,9 @@ tags: [cli, commands]
   `run(ctx) !u8`；`args.zig` 的 `parse`（Help/Version/Usage 信号）、`usageError`、`rootFrom`、
   `numberFrom`；`json.zig`（`src/json.zig`，与 distribute 共享的精确 JSON 输出器）；
   测试经 `test/e2e_*.zig` 以子进程驱动真实 CLI（golden 语料回放）。
-- **允许依赖**：`src/core/`（经其 barrel）、`src/distribute/`、Node 内置模块。命令模块只做
-  参数解析、调用与打印。
+- **允许依赖**：仅 Zig 标准库；`src/core/` 与 `src/distribute/` 经叶子文件相对 import；`src/json.zig` /
+  `src/errors.zig`；构建期注入的 `build_options` 与匿名 `embedded_skills`（由 `tools/` 生成）。命令模块
+  只做参数解析、调用与打印。
 - **禁止**：任何助手 SDK；不直接读技能源或写助手文件（分发全部经 `src/distribute/`）；退出码
   判断只在 `main` 一处，命令模块只返回值。
 

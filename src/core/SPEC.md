@@ -17,17 +17,18 @@ pi-free 的规格模型：is-a-spec 规则、frontmatter 子集解析（有损�
 ## 边界
 
 - **拥有**：以上全部。文件系统是唯一事实来源；模型是派生的、内存的、只读的。
-- **公开面**：`src/lib.zig` 汇总导出 core 模块；`src/cli/` 经叶子文件与 lib 消费。模块自己的
-  测试（`*_test.zig`）可直连叶子，以触达刻意不公开的纯函数守卫——`store.zig` 的路径守卫、段解析器
-  与遍历排序比较器。
+- **公开面**：`src/lib.zig` 汇总 `parse`/`graph`/`store`/`query` 叶子（连同 distribute 叶子与
+  `json`/`errors`），是构建期工具（`tools/`，import 名 `specrail`）的消费面；`src/cli/` 与测试经
+  叶子文件相对 import 消费。模块自己的测试（`*_test.zig`）可直连叶子，以触达刻意不公开的纯函数
+  守卫——`store.zig` 的路径守卫、段解析器与遍历排序比较器。
 - **允许依赖**：仅 Zig 标准库（含 `std.Io`）。
-- **禁止**：任何助手/宿主 SDK（pi、typebox 等）与任何 ThinkRail 包——这是 core 可独立单测的保证。
+- **禁止**：任何助手/宿主 SDK、第三方依赖与任何 ThinkRail 包——这是 core 可独立单测的保证。
 
 ## 派生声明
 
 本目录复制自 ThinkRail `packages/spec-graph/core/`（Copyright 2026 JetBrains s.r.o.，Apache-2.0），
-已修改：去除宿主指向与品牌引用，改写模块描述以适配 specrail 边界。行为不变量与实现自源原样保留
-（见下）；范围变化需同步 `NOTICE`。
+已修改：去除宿主指向与品牌引用，改写模块描述以适配 specrail 边界；实现为 2026-09-18 Zig 全量重写。
+行为不变量自源保留（见下），契约级偏差见根 SPEC「移植偏差」；范围变化需同步 `NOTICE`。
 
 ## 叶子与依赖图
 
@@ -45,7 +46,7 @@ pi-free 的规格模型：is-a-spec 规则、frontmatter 子集解析（有损�
 
 ## 不变量（自源保留）
 
-- `core/` 下任何位置不得 import 任何助手/宿主 SDK（pi、typebox 等）。
+- `core/` 下任何位置不得 import 任何助手/宿主 SDK 或第三方依赖。
 - `buildGraph` 是纯函数（同输入 → 同输出）；索引按 `(mtimeMs, size)` 重新校验每个文件、记忆化图，
   绝不提供过期图。
 - glob 先把每个目录的条目过滤成遍历候选（未忽略目录 + `.md` 文件），**然后**才做归一化与排序：
@@ -89,9 +90,9 @@ pi-free 的规格模型：is-a-spec 规则、frontmatter 子集解析（有损�
   不到的情形：由助手自身的 write 工具写进 `NODE_MODULES/` 的规格不经过 `resolveSpecPath`。
 - `SpecNode.type` 保持 `string`：读模型索引磁盘上的任何内容，故容忍任意 `type`；`SPEC_TYPES` 词汇
   只约束 `specrail create` 的创作面，绝不约束图。
-- 有限词汇（`SPEC_TYPES`、`SPEC_STATUSES`、`SLICE_DIRECTIONS`、`LINK_KINDS`、`IDENTITY_FIELDS`）
-  与 frontmatter 字段名（`FIELDS` 注册表）单一来源 `as const`——无重复字面量列表，改名是一行改动。
-  `core/` 不依赖 typebox。
+- 有限词汇（`SPEC_TYPES`、`SPEC_STATUSES`、`SliceDirection`、`LINK_KINDS`、`IDENTITY_FIELDS` 等）与
+  frontmatter 字段名（`parse.zig` 的字段常量及各派生数组）单一来源 `pub const`——无重复字面量列表，
+  改名是一行改动。
 - 读路径把 frontmatter 强制为标量/字符串数组方言（有损——嵌套映射与注释被丢弃），对派生模型足够。
   写路径（`updateFrontmatterText`）是**行级保留**的：未触碰行逐字节保留（含注释、嵌套块、原始引用
   风格与块列表），仅被编辑的键重写为规范形式（列表重写为行内流式；多行值写为 `|-` 块标量——源实现
