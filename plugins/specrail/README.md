@@ -35,6 +35,27 @@ qoder plugins install specrail@specrail-marketplace
 安装后重新加载插件或重启助手会话。技能自动发现，无需再用 `init` 复制一份技能；
 助手可直接执行 `specrail list`、`specrail create` 等命令。项目自身的工具链不受影响。
 
+## pi 包安装
+
+pi 用包安装（`pi install`）获得同样的 10 个技能与自包含 CLI。pi 的 git 源只支持整仓库克隆
+（无子目录包），因此包根就是本仓库：
+
+```sh
+pi install git:git@github.com:gaorun/specrail      # 全局安装（SSH）
+pi install -l git:git@github.com:gaorun/specrail   # 项目级：写入 .pi/settings.json，随仓库共享
+pi update --extensions                             # 更新已装包
+pi remove git:git@github.com:gaorun/specrail       # 卸载
+```
+
+- 技能来自 `skills/`（pi 的约定目录，`SPEC.md` 按非技能忽略）；CLI 由根扩展 `extensions/specrail.js`
+  把 `plugins/specrail/bin` 前置进会话 PATH——不写用户 shell 配置、不改 pi 设置，卸载即失效。
+- 整仓库克隆意味着安装内容包含源码树与六个平台产物；克隆后不执行任何安装脚本（无根 `package.json`
+  ——有清单会触发 `npm install`，与「不依赖 Node / npm」相悖）。
+- 源必须带 pi 的 `git:` 前缀：`git:git@github.com:gaorun/specrail`（SSH；HTTPS 为
+  `git:github.com/gaorun/specrail`，注意是斜杠）；省略前缀会被当成本地路径。
+- `@<ref>` 可锁定版本（需先打 tag）：`pi install git:git@github.com:gaorun/specrail@v0.1.0`。
+- 与 `specrail init --tools pi` 二选一：两条路都给同名技能，重复会发现重名告警（保留先发现者）。
+
 ### 构建与本地安装验证（维护者）
 
 需要 Zig 0.16.0（唯一构建依赖）：
@@ -50,6 +71,10 @@ zig build plugin-smoke     # 在缓存目录装配插件并做冒烟检查
 qoder plugins validate plugins/specrail
 qoder plugins marketplace add "$PWD"
 qoder plugins install specrail@specrail-marketplace
+
+cd /tmp/pi-probe             # pi 包：不能在仓库根执行，-l 会写当前目录的 .pi/settings.json
+pi install -l -a /path/to/specrail   # 验证技能发现与 specrail 命令
+pi remove -l -a /path/to/specrail    # 清理
 ```
 
 - 一台机器、一条命令即可产出全部六个平台产物；不下载其它工具链，不依赖各平台机器。
@@ -62,8 +87,9 @@ qoder plugins install specrail@specrail-marketplace
   description 非空）并嵌入二进制；构建失败即校验失败。
 - 全平台产物体积约 3.2 MiB，用户只运行其中匹配的平台版本。
 - 公开分发前请核对 `NOTICE` 与 `licenses/` 中的运行时时组件许可（Zig 标准库 / compiler-rt，MIT）。
-- 本地已验证 macOS arm64 的构建、插件市场安装、技能发现与助手 Bash 命令发现；
-  其它平台已交叉编译并通过格式冒烟，尚需目标机器实测；Claude Code 尚未在本机实测。
+- 本地已验证 macOS arm64 的构建、插件市场安装、技能发现与助手 Bash 命令发现；pi 0.85.1 的包安装
+  （技能发现 + 会话内 `specrail` 命令）同样已实测；其它平台已交叉编译并通过格式冒烟，尚需目标机器实测；
+  Claude Code 与非 macOS 平台的 pi 尚未在本机实测。
 
 ## init / sync 生成什么
 

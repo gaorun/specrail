@@ -1,5 +1,6 @@
 zig-out/
 .zig-cache/
+.specrail/context/
 dist/
 .DS_Store
 .idea/

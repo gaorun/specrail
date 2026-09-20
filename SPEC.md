@@ -121,6 +121,19 @@ CLI、技能或版本改变后必须重新构建 `zig build plugin` 并与源码
 Zig 标准库与 compiler-rt（MIT，见 `licenses/zig-MIT.txt` 与 `NOTICE`），不含 Bun 运行时或 JS 依赖。
 构建不承担提交、推送或合规认证。
 
+### pi 包安装
+
+`pi install git:git@github.com:gaorun/specrail`（SSH 简写，必须带 `git:` 前缀；`-l` 项目级、
+`@<ref>` 锁 ref）是 init/sync 与市场之外的第三个入口。pi 的 git 源只支持整仓库克隆（无子目录包），故包根 = 仓库根，安装缓存包含源码树与各平台
+产物；不提供根 `package.json`——pi 见到清单会在克隆后执行 `npm install`，与「不依赖 Node / npm」相悖，
+无清单时克隆后不执行任何安装脚本。
+
+技能由 pi 的约定目录 `skills/` 直接发现（`skills/SPEC.md` 无 `name`/`description`，按非技能忽略）；
+CLI 由根扩展 `extensions/specrail.js`（纯 ESM，无构建、无依赖）把 `plugins/specrail/bin` 前置进会话
+PATH——pi 无「包内 bin 进 PATH」机制，改 `process.env.PATH` 是扩展唯一杠杆，依赖 bash 工具每次 spawn
+读取进程环境（非登录 `bash -c`）。扩展只动 PATH：不写用户 shell 配置、不改 pi 设置，卸载包即失效，
+插件树缺失时静默跳过（技能仍可用）；`plugins/specrail/` 的装配集与 `plugin-smoke` 不因该渠道变化。
+
 ## 数据格式（沿用 spec-graph）
 
 - 节点 = 任意 `.md` 文件 + 非空标量 `id` + `type`（title/status 非入图必需）。
@@ -148,11 +161,11 @@ Zig 标准库与 compiler-rt（MIT，见 `licenses/zig-MIT.txt` 与 `NOTICE`）�
 
 | 来源 | 去向 | 方式 |
 |---|---|---|
-| `packages/spec-graph/core/*` | `src/core/` | 复制 + 去除宿主耦合 + Node 兼容化（测试随迁） |
+| `packages/spec-graph/core/*` | `src/core/` | 复制 + 去除宿主耦合（测试随迁） |
 | `packages/spec-graph/tools/*`（7 工具） | `src/cli/` | 重写：参数校验、`--json`、退出码 |
 | `packages/pi-thinkrail-workflow/skills/*`（9） | `skills/` | 去 pi 化改写（工具引用、硬编码守卫） |
 | `packages/spec-graph/skills/*`（1） | `skills/specrail-spec-graph/` | 改写为命令引用 |
-| `index.ts` 路由规则 | `src/distribute/rule.ts`（`RULE_TEXT` 常量）+ `init --rule` | 改写为收窄后的托管块 |
+| `index.ts` 路由规则 | `src/distribute/rule.zig`（`RULE_TEXT` 常量）+ `init --rule` | 改写为收窄后的托管块 |
 | OpenSpec 1.12.0 | 仅机制参考 | init/sync/清单/适配器形态 |
 | `src/**/*.ts`（本仓库上一实现） | `src/**/*.zig` | 全量重写（2026-09-18）：TS/Bun 实现退役，行为以 `test/golden/` 语料回放验证 |
 
@@ -166,5 +179,5 @@ Apache-2.0（派生自 ThinkRail，版权 JetBrains s.r.o.）。`NOTICE` 声明�
 - **单元**：`zig build test`——core（解析/序列化/编辑/graph/query/validate/子集正则）、cli（参数解析消息表）、distribute（适配器渲染、清单校验、规则块、技能源校验、init/删工具清理）。
 - **契约回放**：`zig build test-e2e`——用移植前 TS 实现采集的 golden 语料（`test/golden/`）逐字节驱动真实二进制：全部读/写命令的文本与 `--json` 输出、退出码、错误消息、init 生成树（93 文件逐字节）；`sync` 幂等复验。
 - **插件**：`zig build plugin-smoke`——在缓存目录装配六平台插件，校验 ELF/PE/Mach-O 格式、技能逐字节、顶层产物集合、清单版本与 `source: "./"`、启动器在无 Node/Bun 的 PATH 下运行。
-- **诚实边界**：macOS arm64 已实测构建、市场安装、技能发现与助手 Bash 命令发现；Windows/Linux 产物已交叉编译并通过格式与装配冒烟，运行行为仍需目标机器实测；Claude Code 尚无本机实测。Linux 产物为静态 musl，glibc 系统预期可直接运行，同样需实测确认。
+- **诚实边界**：macOS arm64 已实测构建、市场安装、技能发现与助手 Bash 命令发现；pi 渠道亦已实测（pi 0.85.1：包设置 → 10 技能发现、扩展加载、会话内 `specrail` 命令、`pi remove` 清理），但该渠道及其扩展**无构建期门禁**，仅手工验证；Windows/Linux 产物已交叉编译并通过格式与装配冒烟，运行行为仍需目标机器实测；Claude Code 与非 macOS 平台的 pi 尚无本机实测。Linux 产物为静态 musl，glibc 系统预期可直接运行，同样需实测确认。
 - **门禁**：`zig build test` + `test-e2e` + `plugin-smoke`；`zig fmt src tools test build.zig` 保持格式。
